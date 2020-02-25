@@ -12,7 +12,10 @@
   #define DynLoad(s) dlopen(s, RTLD_LAZY)
   #define DynFunc(lib, name)  dlsym(lib,name)
   #define DynClose(lib) dlclose(lib)
+  #define DynSuffix ".so"
   #define msleep(time_ms) usleep((time_ms)*1000)
+  
+  #define my_setlocale(category, locale) setlocale(category, locale)
 /*
  *  Win 32
  */
@@ -22,12 +25,25 @@
   #endif
   //Win32
   #define _CRT_SECURE_NO_WARNINGS
+  #define _USE_MATH_DEFINES
+  #define WIN32_LEAN_AND_MEAN
   #include <windows.h>
   
   #define DynLoad(s) LoadLibrary(s)
   #define DynFunc(lib, name)   GetProcAddress((HINSTANCE)lib, name)
   #define DynClose(lib) FreeLibrary(lib)
+  #define DynSuffix ".dll"
   #define msleep(time_ms) Sleep(time_ms)
+  
+  #include <io.h>
+  #include "fcntl.h"
+  
+  #define my_setlocale(category, locale) (\
+    SetConsoleCP(CP_UTF8), SetConsoleOutputCP(CP_UTF8),\
+    _setmode(_fileno(stdout), _O_U8TEXT),\
+    _setmode(_fileno(stdin), _O_U8TEXT),\
+    setlocale(category, locale) )
+  
  /*
   *  Other systems (unsupported)
   */
